@@ -529,7 +529,6 @@ tr:hover {
 
 .family-detail-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 28px;
   flex-wrap: wrap;

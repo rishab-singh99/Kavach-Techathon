@@ -116,8 +116,10 @@ export default function Dashboard({ onLogout }: DashboardProps) {
 
     return (
         <div>
-            {/* Family Alert Popup */}
-            <FamilyAlertPopup onViewFamily={() => { setActiveView('family'); setShowFamily(true); }} />
+            {/* Family Alert Popup — only show on dashboard view */}
+            {activeView === 'dashboard' && (
+                <FamilyAlertPopup onViewFamily={() => { setActiveView('family'); setShowFamily(true); }} />
+            )}
 
             {/* Offline Banner */}
             {isOffline && (

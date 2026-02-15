@@ -1,16 +1,26 @@
 import { useState } from 'react';
 import { useFamilyStore } from '../store/familyStore';
-import { ArrowLeft, Shield, AlertTriangle, CheckCircle, Clock, Smartphone, Plus, X, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Shield, AlertTriangle, CheckCircle, Clock, Smartphone, Plus, X, ChevronRight, UserPlus } from 'lucide-react';
 import type { FamilyMember } from '../store/familyStore';
 
 interface FamilyDashboardProps {
     onBack: () => void;
 }
 
+const AVATAR_OPTIONS = ['👩', '👨', '👧', '👦', '👴', '👵', '🧑', '👶', '🧓', '👱'];
+const RELATION_OPTIONS = ['Mother', 'Father', 'Sister', 'Brother', 'Grandfather', 'Grandmother', 'Son', 'Daughter', 'Spouse', 'Other'];
+
 export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
-    const { members, resolveAlert } = useFamilyStore();
+    const { members, addMember, resolveAlert } = useFamilyStore();
     const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [newMember, setNewMember] = useState({
+        name: '',
+        phone: '',
+        avatar: '🧑',
+        relation: 'Other',
+        deviceInfo: '',
+    });
 
     const getScoreColor = (score: number) => {
         if (score >= 80) return '#10B981';
@@ -22,6 +32,25 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
         if (score >= 80) return 'linear-gradient(135deg, #10B981, #059669)';
         if (score >= 50) return 'linear-gradient(135deg, #F59E0B, #D97706)';
         return 'linear-gradient(135deg, #EF4444, #DC2626)';
+    };
+
+    const handleAddMember = () => {
+        if (!newMember.name.trim() || !newMember.phone.trim()) return;
+        addMember({
+            name: newMember.name.trim(),
+            phone: newMember.phone.trim(),
+            avatar: newMember.avatar,
+            relation: newMember.relation,
+            safetyScore: 100,
+            isOnline: false,
+            lastActive: 'Just added',
+            threatsBlocked: 0,
+            messagesScanned: 0,
+            recentAlerts: [],
+            deviceInfo: newMember.deviceInfo.trim() || 'Unknown Device',
+        });
+        setNewMember({ name: '', phone: '', avatar: '🧑', relation: 'Other', deviceInfo: '' });
+        setShowAddModal(false);
     };
 
     if (selectedMember) {
@@ -178,6 +207,108 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Add Family Member Modal */}
+            {showAddModal && (
+                <div className="family-modal-overlay" onClick={() => setShowAddModal(false)}>
+                    <div className="family-modal animate-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h2 style={{ fontSize: '20px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <UserPlus size={22} color="var(--primary)" /> Add Family Member
+                            </h2>
+                            <button className="btn-icon" onClick={() => setShowAddModal(false)}><X size={20} /></button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Avatar Selector */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AVATAR</label>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    {AVATAR_OPTIONS.map(avatar => (
+                                        <button
+                                            key={avatar}
+                                            onClick={() => setNewMember({ ...newMember, avatar })}
+                                            style={{
+                                                width: '44px', height: '44px', borderRadius: '50%', fontSize: '22px',
+                                                border: newMember.avatar === avatar ? '3px solid var(--primary)' : '2px solid var(--border)',
+                                                background: newMember.avatar === avatar ? 'rgba(32, 190, 255, 0.1)' : 'var(--bg)',
+                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                transition: 'all 0.2s',
+                                            }}
+                                        >
+                                            {avatar}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Name */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>NAME</label>
+                                <input
+                                    value={newMember.name}
+                                    onChange={e => setNewMember({ ...newMember, name: e.target.value })}
+                                    placeholder="e.g. Mom, Dad, Brother..."
+                                />
+                            </div>
+
+                            {/* Phone */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>PHONE NUMBER</label>
+                                <input
+                                    value={newMember.phone}
+                                    onChange={e => setNewMember({ ...newMember, phone: e.target.value.replace(/\D/g, '') })}
+                                    placeholder="Enter phone number"
+                                />
+                            </div>
+
+                            {/* Relation */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>RELATION</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                                    {RELATION_OPTIONS.map(relation => (
+                                        <button
+                                            key={relation}
+                                            onClick={() => setNewMember({ ...newMember, relation })}
+                                            style={{
+                                                padding: '8px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 600,
+                                                border: newMember.relation === relation ? '1px solid var(--primary)' : '1px solid var(--border)',
+                                                background: newMember.relation === relation ? 'rgba(32, 190, 255, 0.1)' : 'transparent',
+                                                color: newMember.relation === relation ? 'var(--primary)' : 'var(--text-secondary)',
+                                                cursor: 'pointer', transition: 'all 0.2s',
+                                            }}
+                                        >
+                                            {relation}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Device Info */}
+                            <div>
+                                <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DEVICE (OPTIONAL)</label>
+                                <input
+                                    value={newMember.deviceInfo}
+                                    onChange={e => setNewMember({ ...newMember, deviceInfo: e.target.value })}
+                                    placeholder="e.g. Samsung Galaxy A54, iPhone 15..."
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '24px' }}>
+                            <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowAddModal(false)}>Cancel</button>
+                            <button
+                                className="btn btn-primary"
+                                style={{ flex: 1 }}
+                                onClick={handleAddMember}
+                                disabled={!newMember.name.trim() || !newMember.phone.trim()}
+                            >
+                                <Plus size={16} /> Add Member
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
