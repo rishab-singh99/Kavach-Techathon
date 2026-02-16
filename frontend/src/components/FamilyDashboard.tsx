@@ -10,8 +10,24 @@ interface FamilyDashboardProps {
 const AVATAR_OPTIONS = ['👩', '👨', '👧', '👦', '👴', '👵', '🧑', '👶', '🧓', '👱'];
 const RELATION_OPTIONS = ['Mother', 'Father', 'Sister', 'Brother', 'Grandfather', 'Grandmother', 'Son', 'Daughter', 'Spouse', 'Other'];
 
+import { useLanguageStore } from '../store/languageStore';
+
+const RELATION_TRANSLATIONS: Record<string, { hi: string, bn: string }> = {
+    'Mother': { hi: 'माँ', bn: 'মা' },
+    'Father': { hi: 'पिता', bn: 'বাবা' },
+    'Sister': { hi: 'बहन', bn: 'বোন' },
+    'Brother': { hi: 'भाई', bn: 'ভাই' },
+    'Grandfather': { hi: 'दादा', bn: 'দাদা' },
+    'Grandmother': { hi: 'दादी', bn: 'দিদা' },
+    'Son': { hi: 'बेटा', bn: 'ছেলে' },
+    'Daughter': { hi: 'बेटी', bn: 'মেয়ে' },
+    'Spouse': { hi: 'जीवनसाथी', bn: 'স্ত্রী/স্বামী' },
+    'Other': { hi: 'अन्य', bn: 'অন্যান্য' },
+};
+
 export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
     const { members, addMember, resolveAlert } = useFamilyStore();
+    const { language } = useLanguageStore();
     const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newMember, setNewMember] = useState({
@@ -48,6 +64,7 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
             messagesScanned: 0,
             recentAlerts: [],
             deviceInfo: newMember.deviceInfo.trim() || 'Unknown Device',
+            relationTranslations: RELATION_TRANSLATIONS[newMember.relation],
         });
         setNewMember({ name: '', phone: '', avatar: '🧑', relation: 'Other', deviceInfo: '' });
         setShowAddModal(false);
@@ -61,7 +78,7 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
                     <button className="btn btn-outline" onClick={() => setSelectedMember(null)}>
                         <ArrowLeft size={16} /> Back
                     </button>
-                    <h2 style={{ fontSize: '24px', fontWeight: 800 }}>{member.avatar} {member.name}'s Dashboard</h2>
+                    <h2 style={{ fontSize: '24px', fontWeight: 800 }}>{member.avatar} {member.nameTranslations?.[language as 'hi' | 'bn'] || member.name}'s Dashboard</h2>
                 </div>
 
                 <div className="family-member-profile">
@@ -71,8 +88,8 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
                             <div className="family-online-dot" style={{ background: member.isOnline ? '#10B981' : '#6B7280', width: '16px', height: '16px' }}></div>
                         </div>
                         <div>
-                            <h3 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '4px' }}>{member.name}</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{member.relation} • {member.phone}</p>
+                            <h3 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '4px' }}>{member.nameTranslations?.[language as 'hi' | 'bn'] || member.name}</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{member.relationTranslations?.[language as 'hi' | 'bn'] || member.relation} • {member.phone}</p>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 <Smartphone size={13} /> {member.deviceInfo}
                             </p>
@@ -158,8 +175,8 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
                                     <div className="family-online-dot" style={{ background: member.isOnline ? '#10B981' : '#6B7280' }}></div>
                                 </div>
                                 <div>
-                                    <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{member.name}</h3>
-                                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{member.relation} • {member.isOnline ? 'Online' : member.lastActive}</p>
+                                    <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{member.nameTranslations?.[language as 'hi' | 'bn'] || member.name}</h3>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{member.relationTranslations?.[language as 'hi' | 'bn'] || member.relation} • {member.isOnline ? 'Online' : member.lastActive}</p>
                                 </div>
                             </div>
                             <div className="family-score-ring">
@@ -278,7 +295,7 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
                                                 cursor: 'pointer', transition: 'all 0.2s',
                                             }}
                                         >
-                                            {relation}
+                                            {RELATION_TRANSLATIONS[relation]?.[language as 'hi' | 'bn'] || relation}
                                         </button>
                                     ))}
                                 </div>
