@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type Language = 'en' | 'hi' | 'bn';
+export type Language = 'en' | 'hi' | 'bn';
 
 const translations: Record<Language, Record<string, string>> = {
     en: {
@@ -26,7 +26,7 @@ const translations: Record<Language, Record<string, string>> = {
         risk: 'RISK', aiAnalysis: 'AI Analysis', reportScam: 'Report Scam', blockSender: 'Block Sender',
         offlineMessage: "You're offline — scans use on-device AI", loadingDashboard: 'Loading your dashboard...',
         failedLoad: 'Failed to load dashboard', retry: 'Retry', tapToScanDesc: 'Tap big blue button to check for viruses',
-        appName: 'Kavach', appTitle: 'Cyber-Kavach',
+        appName: 'Kavach', appTitle: 'Cyber-Kavach', fraudCheck: 'Fraud Check',
     },
     hi: {
         dashboard: 'डैशबोर्ड', family: 'परिवार', trustedContacts: 'विश्वसनीय',
@@ -50,7 +50,7 @@ const translations: Record<Language, Record<string, string>> = {
         risk: 'जोखिम', aiAnalysis: 'AI विश्लेषण', reportScam: 'घोटाले की रिपोर्ट करें', blockSender: 'प्रेषक को ब्लॉक करें',
         offlineMessage: 'आप ऑफ़लाइन हैं — स्कैन ऑन-डिवाइस AI का उपयोग करते हैं', loadingDashboard: 'आपका डैशबोर्ड लोड हो रहा है...',
         failedLoad: 'डैशबोर्ड लोड करने में विफल', retry: 'पुनः प्रयास करें', tapToScanDesc: 'वायरस की जांच के लिए बड़े नीले बटन पर टैप करें',
-        appName: 'कवच', appTitle: 'साइबर-कवच',
+        appName: 'कवच', appTitle: 'साइबर-कवच', fraudCheck: 'धोखाधड़ी जाँच',
     },
     bn: {
         dashboard: 'ড্যাশবোর্ড', family: 'পরিবার', trustedContacts: 'বিশ্বস্ত',
@@ -74,7 +74,7 @@ const translations: Record<Language, Record<string, string>> = {
         risk: 'ঝুঁকি', aiAnalysis: 'AI বিশ্লেষণ', reportScam: 'স্ক্যাম রিপোর্ট করুন', blockSender: 'প্রেরককে ব্লক করুন',
         offlineMessage: 'আপনি অফলাইনে আছেন — স্ক্যান অন-ডিভাইস AI ব্যবহার করে', loadingDashboard: 'আপনার ড্যাশবোর্ড লোড হচ্ছে...',
         failedLoad: 'ড্যাশবোর্ড লোড করতে ব্যর্থ', retry: 'পুনরায় চেষ্টা করুন', tapToScanDesc: 'ভাইরাস পরীক্ষা করতে বড় নীল বোতামে ট্যাপ করুন',
-        appName: 'কবচ', appTitle: 'সাইবার-কবচ',
+        appName: 'কবচ', appTitle: 'সাইবার-কবচ', fraudCheck: 'প্রতারণা পরীক্ষা',
     }
 };
 

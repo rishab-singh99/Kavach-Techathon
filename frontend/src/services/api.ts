@@ -76,6 +76,42 @@ export const dashboardAPI = {
                         time: '3 hrs ago',
                         analysis: { isScam: false, threatLevel: 'low', reason: 'Legitimate Amazon shipping notification' }
                     },
+                    {
+                        sender: '+91-8889XXXXXX',
+                        body: 'Attention: Your electricity connection will be disconnected tonight at 9:30 PM due to unpaid bill. Call our officer at +91-98XXX now.',
+                        time: '4 hrs ago',
+                        analysis: { isScam: true, threatLevel: 'high', reason: 'Electricity bill scam — urgency and fake support number' }
+                    },
+                    {
+                        sender: 'BP-JIOACC',
+                        body: 'Your Jio plan of Rs.666 expires in 2 days. Recharge now to get 20% cashback. Visit: jio.com/recharge',
+                        time: '5 hrs ago',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Genuine telecom recharge reminder' }
+                    },
+                    {
+                        sender: '+91-90XXXXXXXX',
+                        body: 'Work from home job offer! Earn Rs.5000/day by just liking YouTube videos. No investment needed. WhatsApp: wa.me/9190XXXX',
+                        time: '6 hrs ago',
+                        analysis: { isScam: true, threatLevel: 'medium', reason: 'Job scam — unrealistic earnings and WhatsApp redirection' }
+                    },
+                    {
+                        sender: 'AXIS-BANK',
+                        body: 'Your credit card ending in 8899 has been approved for a limit increase. Login to mobile app to accept offer.',
+                        time: 'Yesterday',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Legitimate bank promotion' }
+                    },
+                    {
+                        sender: '+1-202-555-0199',
+                        body: 'IRS Notice: You have a pending tax refund of $1,250. Click here to claim your refund before it expires: irs-gov-refund-claim.com',
+                        time: 'Yesterday',
+                        analysis: { isScam: true, threatLevel: 'high', reason: 'Tax refund scam — impersonating government agency' }
+                    },
+                    {
+                        sender: 'DOMINOS',
+                        body: 'Hungry? Get 50% OFF on your favorite pizzas! Use code YUM50. Order now on the app.',
+                        time: 'Yesterday',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Start promotional offer' }
+                    }
                 ]
             }
         };
