@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFamilyStore } from '../store/familyStore';
+import { useLanguageStore } from '../store/languageStore';
 import { X, Phone, Eye, AlertTriangle, Bell, BellOff } from 'lucide-react';
 import type { FamilyAlert, FamilyMember } from '../store/familyStore';
 
@@ -9,6 +10,7 @@ interface FamilyAlertPopupProps {
 
 export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps) {
     const { members, resolveAlert } = useFamilyStore();
+    const { t, language } = useLanguageStore();
     const [dismissed, setDismissed] = useState<Set<string>>(new Set());
     const [muted, setMuted] = useState(false);
 
@@ -27,7 +29,7 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
         <div className="family-alert-popup-container">
             <div className="family-alert-popup-header">
                 <span style={{ fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Bell size={14} /> {activeAlerts.length} Family Alert{activeAlerts.length > 1 ? 's' : ''}
+                    <Bell size={14} /> {activeAlerts.length} {activeAlerts.length > 1 ? t('familyAlert_plural') : t('familyAlert')}
                 </span>
                 <button onClick={() => setMuted(true)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}>
                     <BellOff size={14} />
@@ -43,7 +45,7 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
                                 <div className="family-alert-popup-avatar">{alert.member.avatar}</div>
                                 <div style={{ minWidth: 0 }}>
                                     <div style={{ fontWeight: 700, fontSize: '14px' }}>
-                                        {alert.member.name}
+                                        {alert.member.nameTranslations?.[language as 'hi' | 'bn'] || alert.member.name}
                                         {alert.severity === 'high' && <AlertTriangle size={14} color="#EF4444" style={{ marginLeft: '6px', verticalAlign: 'middle' }} />}
                                     </div>
                                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{alert.timestamp}</div>
@@ -56,14 +58,14 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
                         <div className="family-alert-popup-message">{alert.message}</div>
                         <div className="family-alert-popup-actions">
                             <button className="family-alert-popup-btn family-alert-popup-btn-primary" onClick={onViewFamily}>
-                                <Eye size={13} /> View
+                                <Eye size={13} /> {t('view')}
                             </button>
                             <button className="family-alert-popup-btn family-alert-popup-btn-call">
-                                <Phone size={13} /> Call {alert.member.name}
+                                <Phone size={13} /> {t('call')} {alert.member.nameTranslations?.[language as 'hi' | 'bn'] || alert.member.name}
                             </button>
                             <button className="family-alert-popup-btn family-alert-popup-btn-dismiss"
                                 onClick={() => resolveAlert(alert.member.id, alert.id)}>
-                                Dismiss
+                                {t('dismiss')}
                             </button>
                         </div>
                         <div className="family-alert-popup-timer">

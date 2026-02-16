@@ -13,6 +13,8 @@ export interface FamilyMember {
     messagesScanned: number;
     recentAlerts: FamilyAlert[];
     deviceInfo: string;
+    nameTranslations?: { hi: string; bn: string };
+    relationTranslations?: { hi: string; bn: string };
 }
 
 export interface FamilyAlert {
@@ -31,6 +33,8 @@ const MOCK_FAMILY: FamilyMember[] = [
         safetyScore: 72, isOnline: true, lastActive: '2 min ago',
         threatsBlocked: 8, messagesScanned: 156,
         deviceInfo: 'Samsung Galaxy A54',
+        nameTranslations: { hi: 'माँ', bn: 'মা' },
+        relationTranslations: { hi: 'माँ', bn: 'মা' },
         recentAlerts: [
             { id: 'a1', type: 'scam_sms', severity: 'high', message: 'KBC lottery scam SMS received', timestamp: '10 min ago', resolved: false, source: '+91-98XXXXXXXX' },
             { id: 'a2', type: 'phishing_link', severity: 'medium', message: 'Clicked suspicious link from WhatsApp', timestamp: '2 hrs ago', resolved: true, source: 'WhatsApp' },
@@ -41,6 +45,8 @@ const MOCK_FAMILY: FamilyMember[] = [
         safetyScore: 85, isOnline: false, lastActive: '1 hr ago',
         threatsBlocked: 3, messagesScanned: 89,
         deviceInfo: 'Redmi Note 12',
+        nameTranslations: { hi: 'पिताजी', bn: 'বাবা' },
+        relationTranslations: { hi: 'पिता', bn: 'বাবা' },
         recentAlerts: [
             { id: 'a3', type: 'suspicious_call', severity: 'low', message: 'Call from unknown international number', timestamp: '5 hrs ago', resolved: true, source: '+44-XXXXXXXXXX' },
         ]
@@ -50,6 +56,8 @@ const MOCK_FAMILY: FamilyMember[] = [
         safetyScore: 94, isOnline: true, lastActive: 'Just now',
         threatsBlocked: 1, messagesScanned: 67,
         deviceInfo: 'iPhone 15',
+        nameTranslations: { hi: 'बहन', bn: 'বোন' },
+        relationTranslations: { hi: 'बहन', bn: 'বোন' },
         recentAlerts: []
     },
     {
@@ -57,6 +65,8 @@ const MOCK_FAMILY: FamilyMember[] = [
         safetyScore: 45, isOnline: true, lastActive: '30 min ago',
         threatsBlocked: 15, messagesScanned: 203,
         deviceInfo: 'Realme 11',
+        nameTranslations: { hi: 'दादाजी', bn: 'দাদু' },
+        relationTranslations: { hi: 'दादा', bn: 'দাদা' },
         recentAlerts: [
             { id: 'a4', type: 'scam_sms', severity: 'high', message: 'Aadhaar KYC fraud SMS received & clicked link!', timestamp: '20 min ago', resolved: false, source: '+91-70XXXXXXXX' },
             { id: 'a5', type: 'suspicious_call', severity: 'high', message: 'Answered call claiming to be from bank', timestamp: '1 hr ago', resolved: false, source: '+91-88XXXXXXXX' },

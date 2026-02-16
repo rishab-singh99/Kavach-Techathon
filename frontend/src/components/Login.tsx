@@ -116,7 +116,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                     <div className="login-hero-logo">
                         <Shield size={48} color="#20BEFF" />
                     </div>
-                    <h1 className="login-hero-title">Cyber-Kavach</h1>
+                    <h1 className="login-hero-title">{t('appTitle')}</h1>
                     <p className="login-hero-subtitle">
                         India's most advanced fraud protection platform.
                         Powered by on-device AI.
@@ -180,7 +180,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                     <div className="login-card-header">
                         <div className="login-card-logo-mobile">
                             <Shield size={28} color="#20BEFF" />
-                            <span>Cyber-Kavach</span>
+                            <span>{t('appTitle')}</span>
                         </div>
                         <h2>{step === 'phone' ? t('login') : t('verifyOTP')}</h2>
                         <p>

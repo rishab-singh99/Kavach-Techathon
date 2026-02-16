@@ -81,7 +81,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             <div className="loading">
                 <div style={{ textAlign: 'center' }}>
                     <div className="spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p>Loading your dashboard...</p>
+                    <p>{t('loadingDashboard')}</p>
                 </div>
             </div>
         );
@@ -91,8 +91,8 @@ export default function Dashboard({ onLogout }: DashboardProps) {
         return (
             <div className="loading">
                 <div style={{ textAlign: 'center' }}>
-                    <p style={{ marginBottom: '16px' }}>Failed to load dashboard</p>
-                    <button className="btn btn-primary" onClick={loadDashboard}><RotateCcw size={16} /> Retry</button>
+                    <p style={{ marginBottom: '16px' }}>{t('failedLoad')}</p>
+                    <button className="btn btn-primary" onClick={loadDashboard}><RotateCcw size={16} /> {t('retry')}</button>
                 </div>
             </div>
         );
@@ -124,7 +124,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             {/* Offline Banner */}
             {isOffline && (
                 <div style={{ background: '#F59E0B', color: '#000', padding: '8px 16px', textAlign: 'center', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <WifiOff size={16} /> You're offline — scans use on-device AI
+                    <WifiOff size={16} /> {t('offlineMessage')}
                 </div>
             )}
 
@@ -134,7 +134,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                     <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                         <a href="/" className="logo">
                             <Shield size={24} style={{ display: 'inline', marginRight: '8px' }} />
-                            Kavach
+                            {t('appName')}
                         </a>
                         <button className="nav-hamburger" onClick={() => setMobileNavOpen(!mobileNavOpen)} aria-label="Toggle menu">
                             {mobileNavOpen ? <X size={24} /> : <Menu size={24} />}
@@ -240,7 +240,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                         )}
                     </button>
                     <p style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>
-                        {t('tapToScan') || 'Tap big blue button to check for viruses'}
+                        {t('tapToScan') || t('tapToScanDesc')}
                     </p>
                 </div>
 
