@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { dashboardAPI } from '../services/api';
 import {
     Shield, AlertTriangle, CheckCircle, Scan, LogOut, Moon, Sun, Eye,
-    RotateCcw, HelpCircle, WifiOff, Lock, Users, ShieldCheck, Menu, X
+    RotateCcw, HelpCircle, WifiOff, Lock, Users, ShieldCheck, Menu, X, Search
 } from 'lucide-react';
 import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import CountUp from 'react-countup';
@@ -174,14 +174,14 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             )}
 
             {/* Trusted Contacts View */}
-            {showTrustedContacts && (
+            {activeView === 'trusted' && (
                 <div className="container">
-                    <TrustedContacts onBack={() => { setShowTrustedContacts(false); setActiveView('dashboard'); }} />
+                    <TrustedContacts onBack={() => setActiveView('dashboard')} />
                 </div>
             )}
 
             {/* Main Dashboard Content */}
-            <div className="container" style={{ paddingTop: '32px', paddingBottom: '64px', display: (showFamily || showTrustedContacts) ? 'none' : 'block' }}>
+            <div className="container" style={{ paddingTop: '32px', paddingBottom: '64px', display: (activeView !== 'dashboard') ? 'none' : 'block' }}>
                 {/* Header */}
                 <div className="dashboard-header" style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                     <div>

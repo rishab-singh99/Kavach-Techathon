@@ -44,6 +44,7 @@ const KNOWN_SCAM: Record<string, string> = {
     '7777777777': 'Tech Support - "Your computer has a virus"',
     '6666666666': 'Bank Fraud - "KYC Update Required"',
     '5555555555': 'Job Offer - "Part-time work from home"',
+    '1234567890': 'Insurance Scam - "Premium Overdue/Refund"',
 };
 
 interface TrustedContactStore {
@@ -78,28 +79,47 @@ export const useTrustedContactStore = create<TrustedContactStore>()(
                 const contacts = get().contacts;
                 const found = contacts.find(c => c.phone === phone);
                 if (found) {
-                    const result: VerificationResult = { found: true, contact: found, isSafe: true, isScam: false, communityReports: 0, message: `✅ "${found.name}" is in your trusted contacts.` };
+                    const result: VerificationResult = {
+                        found: true,
+                        contact: found,
+                        isSafe: true,
+                        isScam: false,
+                        communityReports: 0,
+                        message: `✅ "${found.name}" is in your verified contacts list. This is a trusted caller.`
+                    };
                     set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                     return result;
                 }
                 if (KNOWN_SAFE[phone]) {
-                    const result: VerificationResult = { found: false, isSafe: true, isScam: false, communityReports: 0, message: `✅ Known safe number: ${KNOWN_SAFE[phone]}` };
+                    const result: VerificationResult = {
+                        found: false,
+                        isSafe: true,
+                        isScam: false,
+                        communityReports: 5,
+                        message: `✅ Verified Official Number: ${KNOWN_SAFE[phone]}. This number is verified as a safe official service.`
+                    };
                     set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                     return result;
                 }
                 if (KNOWN_SCAM[phone]) {
-                    const reports = Math.floor(Math.random() * 500) + 50;
+                    const reports = Math.floor(Math.random() * 500) + 120;
                     const result: VerificationResult = {
                         found: false,
                         isSafe: false,
                         isScam: true,
                         communityReports: reports,
-                        message: `🚨 SCAM ALERT: ${KNOWN_SCAM[phone]} (Reported by ${reports} users)`
+                        message: `🚨 SCAM PROFILE: ${KNOWN_SCAM[phone]}. This number has been flagged by the community for fraudulent activity. Do not share personal details.`
                     };
                     set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                     return result;
                 }
-                const result: VerificationResult = { found: false, isSafe: false, isScam: false, communityReports: 0, message: `⚠️ Unknown number. Not in your trusted contacts.` };
+                const result: VerificationResult = {
+                    found: false,
+                    isSafe: false,
+                    isScam: false,
+                    communityReports: 0,
+                    message: `⚠️ UNVERIFIED PROFILE: This number is not in our verified database. Exercise caution when receiving calls from this sender.`
+                };
                 set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                 return result;
             },
