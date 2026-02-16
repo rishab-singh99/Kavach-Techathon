@@ -15,7 +15,7 @@ export default function FamilyDashboard({ onBack }: FamilyDashboardProps) {
     const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newMember, setNewMember] = useState({
-        name: '',
+        name: '', 
         phone: '',
         avatar: '🧑',
         relation: 'Other',

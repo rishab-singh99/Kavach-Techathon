@@ -38,9 +38,13 @@ const KNOWN_SAFE: Record<string, string> = {
     '112': 'Emergency', '100': 'Police', '108': 'Ambulance',
 };
 
-const KNOWN_SCAM: string[] = [
-    '9999999999', '8888888888', '7777777777',
-];
+const KNOWN_SCAM: Record<string, string> = {
+    '9999999999': 'Fake Lottery - "You won 1 Crore!"',
+    '8888888888': 'IRS Scam - "Tax Refund Pending"',
+    '7777777777': 'Tech Support - "Your computer has a virus"',
+    '6666666666': 'Bank Fraud - "KYC Update Required"',
+    '5555555555': 'Job Offer - "Part-time work from home"',
+};
 
 interface TrustedContactStore {
     contacts: TrustedContact[];
@@ -83,8 +87,15 @@ export const useTrustedContactStore = create<TrustedContactStore>()(
                     set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                     return result;
                 }
-                if (KNOWN_SCAM.includes(phone)) {
-                    const result: VerificationResult = { found: false, isSafe: false, isScam: true, communityReports: 142, message: `🚨 WARNING: This number has been reported as a SCAM by 142 users!` };
+                if (KNOWN_SCAM[phone]) {
+                    const reports = Math.floor(Math.random() * 500) + 50;
+                    const result: VerificationResult = {
+                        found: false,
+                        isSafe: false,
+                        isScam: true,
+                        communityReports: reports,
+                        message: `🚨 SCAM ALERT: ${KNOWN_SCAM[phone]} (Reported by ${reports} users)`
+                    };
                     set(s => ({ recentVerifications: [result, ...s.recentVerifications].slice(0, 10) }));
                     return result;
                 }
