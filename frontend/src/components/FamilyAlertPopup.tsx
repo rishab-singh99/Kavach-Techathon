@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFamilyStore } from '../store/familyStore';
-import { useLanguageStore } from '../store/languageStore';
-import { X, Phone, Eye, AlertTriangle, Bell, BellOff } from 'lucide-react';
+import { useLanguageStore, type Language } from '../store/languageStore';
+import { X, Phone, Eye, AlertTriangle, Bell, BellOff, Volume2 } from 'lucide-react';
 import type { FamilyAlert, FamilyMember } from '../store/familyStore';
+import { speak, speakThreatAlert } from '../utils/speech';
 
 interface FamilyAlertPopupProps {
     onViewFamily: () => void;
@@ -13,6 +14,7 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
     const { t, language } = useLanguageStore();
     const [dismissed, setDismissed] = useState<Set<string>>(new Set());
     const [muted, setMuted] = useState(false);
+    const spokenAlerts = useRef<Set<string>>(new Set());
 
     const activeAlerts: (FamilyAlert & { member: FamilyMember })[] = [];
     members.forEach(member => {
@@ -22,6 +24,27 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
                 activeAlerts.push({ ...alert, member });
             });
     });
+
+    useEffect(() => {
+        if (muted) return;
+
+        // Check if any NEW high-severity alert appeared
+        const hasNewHighAlert = activeAlerts.some(alert =>
+            alert.severity === 'high' && !spokenAlerts.current.has(alert.id)
+        );
+
+        if (hasNewHighAlert) {
+            // Mark all current high alerts as spoken
+            activeAlerts.forEach(alert => {
+                if (alert.severity === 'high') {
+                    spokenAlerts.current.add(alert.id);
+                }
+            });
+
+            // Trigger the sequential multi-language "Threat detected" alert
+            speakThreatAlert(language as any);
+        }
+    }, [activeAlerts.length, muted]);
 
     if (muted || activeAlerts.length === 0) return null;
 
@@ -62,6 +85,11 @@ export default function FamilyAlertPopup({ onViewFamily }: FamilyAlertPopupProps
                             </button>
                             <button className="family-alert-popup-btn family-alert-popup-btn-call">
                                 <Phone size={13} /> {t('call')} {alert.member.nameTranslations?.[language as 'hi' | 'bn'] || alert.member.name}
+                            </button>
+                            <button className="family-alert-popup-btn family-alert-popup-btn-voice"
+                                onClick={() => speak(alert.message, language as any)}
+                                title="Listen to alert">
+                                <Volume2 size={13} />
                             </button>
                             <button className="family-alert-popup-btn family-alert-popup-btn-dismiss"
                                 onClick={() => resolveAlert(alert.member.id, alert.id)}>

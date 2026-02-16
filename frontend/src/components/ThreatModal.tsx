@@ -1,5 +1,6 @@
-import { Shield, X, AlertTriangle, CheckCircle, ExternalLink } from 'lucide-react';
+import { Shield, X, AlertTriangle, CheckCircle, ExternalLink, Volume2 } from 'lucide-react';
 import { useLanguageStore } from '../store/languageStore';
+import { speak, speakThreatAlert } from '../utils/speech';
 
 interface ThreatModalProps {
     message: any;
@@ -7,7 +8,16 @@ interface ThreatModalProps {
 }
 
 export default function ThreatModal({ message, onClose }: ThreatModalProps) {
-    const { t } = useLanguageStore();
+    const { t, language } = useLanguageStore();
+
+    const handleReadAnalysis = () => {
+        if (message.analysis.isScam) {
+            speakThreatAlert(language as any);
+        } else {
+            const text = `${t('aiAnalysis')}: ${message.analysis.reason}`;
+            speak(text, language as any);
+        }
+    };
     return (
         <div className="family-modal-overlay" onClick={onClose}>
             <div className="family-modal animate-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '560px' }}>
@@ -39,7 +49,12 @@ export default function ThreatModal({ message, onClose }: ThreatModalProps) {
                 </div>
 
                 <div style={{ padding: '14px', background: message.analysis.isScam ? 'rgba(239,68,68,0.06)' : 'rgba(16,185,129,0.06)', borderRadius: '12px', border: `1px solid ${message.analysis.isScam ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'}` }}>
-                    <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{t('aiAnalysis')}</div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {t('aiAnalysis')}
+                        <button className="btn-icon" onClick={handleReadAnalysis} style={{ padding: '4px' }} title="Read analysis">
+                            <Volume2 size={14} />
+                        </button>
+                    </div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{message.analysis.reason}</div>
                 </div>
 
