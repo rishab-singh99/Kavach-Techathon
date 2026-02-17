@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import { playWelcomeMessage } from './utils/speech';
 
 export default function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // Optimization: Initialize state directly to prevent login flash
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) setIsLoggedIn(true);
+        // Play welcome audio on reload
+        playWelcomeMessage(isLoggedIn);
     }, []);
 
     const handleLogout = () => {
