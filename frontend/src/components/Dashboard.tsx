@@ -133,7 +133,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             {/* Navbar */}
             <nav className="navbar">
                 <div className="container">
-                    <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                    <div className="nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <a href="/" className="logo">
                             <Shield size={24} style={{ display: 'inline', marginRight: '8px' }} />
                             {t('appName')}
