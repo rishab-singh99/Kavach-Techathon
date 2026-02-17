@@ -13,6 +13,41 @@ const ALERT_MESSAGES: Record<AppLanguage, string> = {
     bn: 'হুমকি সনাক্ত করা হয়েছে!'
 };
 
+
+let voicesLoaded = false;
+
+const loadVoices = (): Promise<void> => {
+    return new Promise((resolve) => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+            voicesLoaded = true;
+            resolve();
+            return;
+        }
+
+        const handler = () => {
+            voicesLoaded = true;
+            window.speechSynthesis.removeEventListener('voiceschanged', handler);
+            resolve();
+        };
+
+        window.speechSynthesis.addEventListener('voiceschanged', handler);
+
+        // Fallback check
+        setTimeout(() => {
+            if (!voicesLoaded) {
+                voicesLoaded = true; // Proceed anyway with what we have
+                resolve();
+            }
+        }, 1000);
+    });
+};
+
+// Initialize voices immediately
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+    loadVoices();
+}
+
 /**
  * Find the best available assistant voice for a language
  */
@@ -31,8 +66,12 @@ const getBestVoice = (langCode: string) => {
     return voices.find(v => v.lang.startsWith(langCode));
 };
 
-export const speak = (text: string, lang: AppLanguage = 'en', onEnd?: () => void) => {
+export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () => void) => {
     if (!window.speechSynthesis) return;
+
+    if (!voicesLoaded) {
+        await loadVoices();
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = LANG_MAP[lang];
@@ -51,8 +90,12 @@ export const speak = (text: string, lang: AppLanguage = 'en', onEnd?: () => void
 /**
  * Play threat alert in the selected language
  */
-export const speakThreatAlert = (selectedLang: AppLanguage = 'en') => {
+export const speakThreatAlert = async (selectedLang: AppLanguage = 'en') => {
     if (!window.speechSynthesis) return;
+
+    if (!voicesLoaded) {
+        await loadVoices();
+    }
 
     // Reset synthesis
     window.speechSynthesis.cancel();
@@ -66,9 +109,7 @@ export const speakThreatAlert = (selectedLang: AppLanguage = 'en') => {
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    // improved voice selection
-    const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(v => v.lang.startsWith(utterance.lang) && (v.name.includes('Google') || v.name.includes('Premium') || v.name.includes('Enhanced')));
+    const voice = getBestVoice(utterance.lang);
     if (voice) utterance.voice = voice;
 
     window.speechSynthesis.speak(utterance);
