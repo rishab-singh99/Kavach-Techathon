@@ -14,6 +14,8 @@ import TrustedContacts from './TrustedContacts';
 import LanguageSelector from './LanguageSelector';
 import { useThemeStore } from '../store/themeStore';
 import { useLanguageStore } from '../store/languageStore';
+import VisualShield from './VisualShield';
+import { Camera } from 'lucide-react';
 
 interface DashboardProps {
     onLogout: () => void;
@@ -28,7 +30,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     const [showHelp, setShowHelp] = useState(false);
     const [showFamily, setShowFamily] = useState(false);
     const [showTrustedContacts, setShowTrustedContacts] = useState(false);
-    const [activeView, setActiveView] = useState<'dashboard' | 'family' | 'trusted'>('dashboard');
+    const [activeView, setActiveView] = useState<'dashboard' | 'family' | 'trusted' | 'visual'>('dashboard');
     const [isOffline, setIsOffline] = useState(!navigator.onLine);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const { theme, toggleTheme } = useThemeStore();
@@ -143,6 +145,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                             <li><a href="#" className={activeView === 'dashboard' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('dashboard'); setShowFamily(false); setShowTrustedContacts(false); setMobileNavOpen(false); }}>{t('dashboard')}</a></li>
                             <li><a href="#" className={activeView === 'family' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('family'); setShowFamily(true); setShowTrustedContacts(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={16} />{t('family')}</a></li>
                             <li><a href="#" className={activeView === 'trusted' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('trusted'); setShowTrustedContacts(true); setShowFamily(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ShieldCheck size={16} />{t('trustedContacts') || 'Trusted'}</a></li>
+                            <li><a href="#" className={activeView === 'visual' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('visual'); setShowFamily(false); setShowTrustedContacts(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16} /> Visual Shield</a></li>
                             <li>
                                 <button
                                     onClick={() => { setShowHelp(true); setMobileNavOpen(false); }}
@@ -177,6 +180,13 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             {activeView === 'trusted' && (
                 <div className="container">
                     <TrustedContacts onBack={() => setActiveView('dashboard')} />
+                </div>
+            )}
+
+            {/* Visual Shield View */}
+            {activeView === 'visual' && (
+                <div className="container">
+                    <VisualShield onBack={() => setActiveView('dashboard')} />
                 </div>
             )}
 
@@ -217,6 +227,24 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* Visual Shield Quick Action */}
+                <div className="card" style={{
+                    margin: '32px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    background: 'linear-gradient(90deg, var(--surface) 0%, rgba(32, 190, 255, 0.05) 100%)',
+                    borderLeft: '4px solid var(--primary)', cursor: 'pointer', animation: 'fadeIn 0.5s ease-out'
+                }} onClick={() => setActiveView('visual')}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '10px' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'rgba(32, 190, 255, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', flexShrink: 0 }}>
+                            <Camera size={28} />
+                        </div>
+                        <div>
+                            <h3 style={{ fontSize: '20px', fontWeight: 800 }}>AI Visual Shield</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Analyze screenshots for bank scams, fake bills, and phishing links.</p>
+                        </div>
+                    </div>
+                    <button className="btn btn-primary" style={{ marginRight: '10px' }}>Scan Image</button>
                 </div>
 
                 {/* Scan Button */}
