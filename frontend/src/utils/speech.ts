@@ -114,3 +114,23 @@ export const speakThreatAlert = async (selectedLang: AppLanguage = 'en') => {
 
     window.speechSynthesis.speak(utterance);
 };
+
+/**
+ * Play welcome message on app load
+ */
+export const playWelcomeMessage = async (isLoggedIn: boolean) => {
+    if (!window.speechSynthesis) return;
+
+    if (!voicesLoaded) {
+        await loadVoices();
+    }
+
+    const text = isLoggedIn
+        ? "Welcome back to Kavach. Your digital safety shield is active."
+        : "Welcome to Kavach. Secure your digital life.";
+
+    // Small delay to allow browser interaction if possible, though on reload it might still block
+    setTimeout(() => {
+        speak(text, 'en');
+    }, 500);
+};
