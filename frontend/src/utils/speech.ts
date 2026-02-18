@@ -27,6 +27,20 @@ const loadVoices = (): Promise<void> => {
             const hasBengali = voices.some(v => v.lang.includes('bn'));
 
             if (voices.length > 0 && (hasBengali || attempts >= maxAttempts)) {
+                console.groupCollapsed('🗣️ Kavach Voice Check');
+                console.log(`Total Voices: ${voices.length}`);
+
+                // Log all voices for debugging
+                console.table(voices.map(v => ({ name: v.name, lang: v.lang, service: v.localService ? 'Local' : 'Network' })));
+
+                const bengaliVoices = voices.filter(v => v.lang.includes('bn'));
+                if (bengaliVoices.length > 0) {
+                    console.log('✅ Bengali Voices Found:', bengaliVoices);
+                } else {
+                    console.warn('⚠️ NO BENGALI VOICES DETECTED ON THIS OS/BROWSER.');
+                }
+                console.groupEnd();
+
                 voicesLoaded = true;
                 resolve();
             } else {
