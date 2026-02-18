@@ -18,28 +18,34 @@ let voicesLoaded = false;
 
 const loadVoices = (): Promise<void> => {
     return new Promise((resolve) => {
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
-            voicesLoaded = true;
-            resolve();
-            return;
-        }
+        let attempts = 0;
+        const maxAttempts = 10;
 
-        const handler = () => {
-            voicesLoaded = true;
-            window.speechSynthesis.removeEventListener('voiceschanged', handler);
-            resolve();
+        const checkVoices = () => {
+            const voices = window.speechSynthesis.getVoices();
+            // Check if we have ANY Bengali voice, or ANY voice at all
+            const hasBengali = voices.some(v => v.lang.includes('bn'));
+
+            if (voices.length > 0 && (hasBengali || attempts >= maxAttempts)) {
+                voicesLoaded = true;
+                resolve();
+            } else {
+                attempts++;
+                setTimeout(checkVoices, 100);
+            }
         };
 
-        window.speechSynthesis.addEventListener('voiceschanged', handler);
+        checkVoices();
 
-        // Fallback check
-        setTimeout(() => {
-            if (!voicesLoaded) {
-                voicesLoaded = true; // Proceed anyway with what we have
+        // Also listen for the event just in case
+        window.speechSynthesis.onvoiceschanged = () => {
+            // If the event fires, we might have new voices, check immediately
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                voicesLoaded = true;
                 resolve();
             }
-        }, 1000);
+        };
     });
 };
 
@@ -71,30 +77,31 @@ const getBestVoice = (langCode: string) => {
         }
         // Check base language match (e.g. 'bn-BD' for 'bn-IN' request fallback)
         else if (voice.lang.replace('_', '-').startsWith(baseLang)) {
-            score += 100;
+            score += 200; // Boosted base language match
         }
         else {
             return -1; // Not a match for this language at all
         }
 
         // 2. Provider Preference (Google/Apple/Microsoft usually imply better quality)
-        if (voice.name.includes('Google')) score += 50;
-        if (voice.name.includes('Apple')) score += 10; // Siri voices
+        // Heavily favor Google as they are standard on Chrome/Android and usually high quality
+        if (voice.name.includes('Google')) score += 100;
+        if (voice.name.includes('Apple')) score += 50;
 
         // 3. Gender/Quality Hints
         // Explicitly prefer "Female" or known female voices
         const lowerName = voice.name.toLowerCase();
         if (lowerName.includes('female') || lowerName.includes('samantha') || lowerName.includes('zira')) {
-            score += 30;
+            score += 50;
         }
 
         if (lowerName.includes('premium') || lowerName.includes('enhanced') || lowerName.includes('natural')) {
-            score += 20;
+            score += 30;
         }
 
         // 4. Deprioritize explicitly Male voices if we generally prefer Female for "Assistant" feel
-        if (lowerName.includes('male') || lowerName.includes('david')) {
-            score -= 20;
+        if (lowerName.includes('male') || lowerName.includes('david') || lowerName.includes('ravi')) {
+            score -= 50;
         }
 
         return score;
