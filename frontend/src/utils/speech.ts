@@ -55,27 +55,58 @@ const getBestVoice = (langCode: string) => {
     const voices = window.speechSynthesis.getVoices();
     const baseLang = langCode.split('-')[0]; // e.g., 'bn' from 'bn-IN'
 
-    // 1. Prefer "Google" voices strictly matching the requested code
-    const googleVoice = voices.find(v => v.lang === langCode && v.name.includes('Google'));
-    if (googleVoice) return googleVoice;
+    // Helper to check if a voice matches our criteria and assign it a score
+    const getScore = (voice: SpeechSynthesisVoice) => {
+        let score = 0;
 
-    // 2. Strict prefix match for the requested code (e.g. 'bn-IN') with quality preference
-    const premiumVoice = voices.find(v => v.lang.startsWith(langCode) && (v.name.includes('Premium') || v.name.includes('Enhanced')));
-    if (premiumVoice) return premiumVoice;
+        // 1. Language Match (Highest Priority)
+        // Check strict match (e.g., 'en-US' vs 'en-US') or normalized match
+        if (voice.lang === langCode) {
+            score += 1000;
+        }
+        // Check looser match (e.g., 'en-US' matching 'en-GB' if requested 'en') - relying on startsWith
+        // Note: voices often have lang as 'en_US' or 'en-US', normalize? 
+        else if (voice.lang.replace('_', '-').startsWith(langCode)) {
+            score += 500;
+        }
+        // Check base language match (e.g. 'bn-BD' for 'bn-IN' request fallback)
+        else if (voice.lang.replace('_', '-').startsWith(baseLang)) {
+            score += 100;
+        }
+        else {
+            return -1; // Not a match for this language at all
+        }
 
-    // 3. Fallback: Any voice strictly matching requested code
-    const exactMatch = voices.find(v => v.lang.startsWith(langCode));
-    if (exactMatch) return exactMatch;
+        // 2. Provider Preference (Google/Apple/Microsoft usually imply better quality)
+        if (voice.name.includes('Google')) score += 50;
+        if (voice.name.includes('Apple')) score += 10; // Siri voices
 
-    // 4. Broader Fallback: Try matching the base language (e.g. 'bn' finding 'bn-BD')
-    // Only do this if we didn't find a strict match
-    const googleBaseVoice = voices.find(v => v.lang.startsWith(baseLang) && v.name.includes('Google'));
-    if (googleBaseVoice) return googleBaseVoice;
+        // 3. Gender/Quality Hints
+        // Explicitly prefer "Female" or known female voices
+        const lowerName = voice.name.toLowerCase();
+        if (lowerName.includes('female') || lowerName.includes('samantha') || lowerName.includes('zira')) {
+            score += 30;
+        }
 
-    const baseVoice = voices.find(v => v.lang.startsWith(baseLang));
-    if (baseVoice) return baseVoice;
+        if (lowerName.includes('premium') || lowerName.includes('enhanced') || lowerName.includes('natural')) {
+            score += 20;
+        }
 
-    return null;
+        // 4. Deprioritize explicitly Male voices if we generally prefer Female for "Assistant" feel
+        if (lowerName.includes('male') || lowerName.includes('david')) {
+            score -= 20;
+        }
+
+        return score;
+    };
+
+    // Sort voices by score descending
+    const sortedVoices = voices
+        .map(v => ({ voice: v, score: getScore(v) }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+    return sortedVoices.length > 0 ? sortedVoices[0].voice : null;
 };
 
 export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () => void) => {
