@@ -109,6 +109,54 @@ const getBestVoice = (langCode: string) => {
     return sortedVoices.length > 0 ? sortedVoices[0].voice : null;
 };
 
+// Helper to safely speak with fallback
+const speakSafe = (utterance: SpeechSynthesisUtterance, text: string, originalLang: string, onEnd?: () => void) => {
+    // If the browser throws an error (e.g. language not supported), catch it
+    utterance.onerror = (e) => {
+        console.warn(`Speech synthesis error for ${originalLang}, falling back to English:`, e);
+
+        // Only fallback if we weren't already trying English
+        if (originalLang !== 'en-US' && originalLang !== 'en') {
+            // Cancel current (failed) speech
+            window.speechSynthesis.cancel();
+
+            const fallbackUtterance = new SpeechSynthesisUtterance(text);
+            fallbackUtterance.lang = 'en-US'; // Force English
+
+            // Try enabling English voice specifically if available
+            const enVoice = getBestVoice('en-US');
+            if (enVoice) fallbackUtterance.voice = enVoice;
+
+            if (onEnd) fallbackUtterance.onend = onEnd;
+            window.speechSynthesis.speak(fallbackUtterance);
+        }
+    };
+
+    // Also set a timeout watchdog - if onstart doesn't fire in 2s, assume failure and force fallback
+    // This handles cases where the browser doesn't throw an error but just hangs on missing voices
+    const watchdog = setTimeout(() => {
+        if (originalLang !== 'en-US' && originalLang !== 'en') {
+            console.warn(`Speech synthesis timeout for ${originalLang}, forcing fallback`);
+            window.speechSynthesis.cancel();
+            const fallbackUtterance = new SpeechSynthesisUtterance(text);
+            fallbackUtterance.lang = 'en-US';
+            const enVoice = getBestVoice('en-US');
+            if (enVoice) fallbackUtterance.voice = enVoice;
+            if (onEnd) fallbackUtterance.onend = onEnd;
+            window.speechSynthesis.speak(fallbackUtterance);
+        }
+    }, 2000);
+
+    utterance.onstart = () => clearTimeout(watchdog);
+
+    if (onEnd) utterance.onend = () => {
+        clearTimeout(watchdog);
+        onEnd();
+    };
+
+    window.speechSynthesis.speak(utterance);
+};
+
 export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () => void) => {
     if (!window.speechSynthesis) return;
 
@@ -129,14 +177,12 @@ export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () =
 
     if (voice) {
         utterance.voice = voice;
-        utterance.lang = voice.lang; // Important: Sync utterance lang with the actual voice found
+        utterance.lang = voice.lang;
     } else {
         utterance.lang = preferredLang;
     }
 
-    if (onEnd) utterance.onend = onEnd;
-
-    window.speechSynthesis.speak(utterance);
+    speakSafe(utterance, text, preferredLang, onEnd);
 };
 
 /**
@@ -154,10 +200,9 @@ export const speakThreatAlert = async (selectedLang: AppLanguage = 'en') => {
 
     // Get message for selected language
     const text = ALERT_MESSAGES[selectedLang] || ALERT_MESSAGES['en'];
-
-    const utterance = new SpeechSynthesisUtterance(text);
     const preferredLang = LANG_MAP[selectedLang] || 'en-US';
 
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
@@ -171,13 +216,29 @@ export const speakThreatAlert = async (selectedLang: AppLanguage = 'en') => {
         utterance.lang = preferredLang;
     }
 
+    // Use specific threat alert fallback logic if different from generic speak
+    const fallbackText = ALERT_MESSAGES['en'];
+
+    utterance.onerror = (e) => {
+        console.warn('Threat alert speech error, falling back:', e);
+        if (selectedLang !== 'en') {
+            window.speechSynthesis.cancel();
+            const fallbackUtterance = new SpeechSynthesisUtterance(fallbackText);
+            fallbackUtterance.lang = 'en-US';
+            const enVoice = getBestVoice('en-US');
+            if (enVoice) fallbackUtterance.voice = enVoice;
+            window.speechSynthesis.speak(fallbackUtterance);
+        }
+    };
+
     window.speechSynthesis.speak(utterance);
 };
+
 
 /**
  * Play welcome message on app load
  */
-export const playWelcomeMessage = async (isLoggedIn: boolean) => {
+export const speakWelcomeMessage = async (isLoggedIn: boolean) => {
     if (!window.speechSynthesis) return;
 
     if (!voicesLoaded) {

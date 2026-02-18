@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import { playWelcomeMessage } from './utils/speech';
+import { speakWelcomeMessage } from './utils/speech';
 
 export default function App() {
     // Optimization: Initialize state directly to prevent login flash
@@ -9,7 +9,7 @@ export default function App() {
 
     useEffect(() => {
         // Play welcome audio on reload
-        playWelcomeMessage(isLoggedIn);
+        speakWelcomeMessage(isLoggedIn);
     }, []);
 
     const handleLogout = () => {
