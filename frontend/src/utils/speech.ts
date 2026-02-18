@@ -53,17 +53,29 @@ if (typeof window !== 'undefined' && window.speechSynthesis) {
  */
 const getBestVoice = (langCode: string) => {
     const voices = window.speechSynthesis.getVoices();
+    const baseLang = langCode.split('-')[0]; // e.g., 'bn' from 'bn-IN'
 
-    // Prefer "Google" voices as they sound more like Alexa/modern assistants
-    const googleVoice = voices.find(v => v.lang.startsWith(langCode) && v.name.includes('Google'));
+    // 1. Prefer "Google" voices strictly matching the requested code
+    const googleVoice = voices.find(v => v.lang === langCode && v.name.includes('Google'));
     if (googleVoice) return googleVoice;
 
-    // Fallback to high quality voices
+    // 2. Strict prefix match for the requested code (e.g. 'bn-IN') with quality preference
     const premiumVoice = voices.find(v => v.lang.startsWith(langCode) && (v.name.includes('Premium') || v.name.includes('Enhanced')));
     if (premiumVoice) return premiumVoice;
 
-    // Universal fallback
-    return voices.find(v => v.lang.startsWith(langCode));
+    // 3. Fallback: Any voice strictly matching requested code
+    const exactMatch = voices.find(v => v.lang.startsWith(langCode));
+    if (exactMatch) return exactMatch;
+
+    // 4. Broader Fallback: Try matching the base language (e.g. 'bn' finding 'bn-BD')
+    // Only do this if we didn't find a strict match
+    const googleBaseVoice = voices.find(v => v.lang.startsWith(baseLang) && v.name.includes('Google'));
+    if (googleBaseVoice) return googleBaseVoice;
+
+    const baseVoice = voices.find(v => v.lang.startsWith(baseLang));
+    if (baseVoice) return baseVoice;
+
+    return null;
 };
 
 export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () => void) => {
@@ -74,13 +86,22 @@ export const speak = async (text: string, lang: AppLanguage = 'en', onEnd?: () =
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = LANG_MAP[lang];
+    const preferredLang = LANG_MAP[lang];
+
+    // Default settings
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    const voice = getBestVoice(utterance.lang);
-    if (voice) utterance.voice = voice;
+    // Attempt to find the best voice
+    const voice = getBestVoice(preferredLang);
+
+    if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang; // Important: Sync utterance lang with the actual voice found
+    } else {
+        utterance.lang = preferredLang;
+    }
 
     if (onEnd) utterance.onend = onEnd;
 
@@ -104,13 +125,20 @@ export const speakThreatAlert = async (selectedLang: AppLanguage = 'en') => {
     const text = ALERT_MESSAGES[selectedLang] || ALERT_MESSAGES['en'];
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = LANG_MAP[selectedLang] || 'en-US';
+    const preferredLang = LANG_MAP[selectedLang] || 'en-US';
+
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
-    const voice = getBestVoice(utterance.lang);
-    if (voice) utterance.voice = voice;
+    const voice = getBestVoice(preferredLang);
+
+    if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+    } else {
+        utterance.lang = preferredLang;
+    }
 
     window.speechSynthesis.speak(utterance);
 };
