@@ -17,7 +17,8 @@ import LanguageSelector from './LanguageSelector';
 import { useThemeStore } from '../store/themeStore';
 import { useLanguageStore } from '../store/languageStore';
 import VisualShield from './VisualShield';
-import { Camera } from 'lucide-react';
+import SahayakDashboard from './SahayakDashboard';
+import { Camera, Handshake } from 'lucide-react';
 
 interface DashboardProps {
     onLogout: () => void;
@@ -32,7 +33,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     const [showHelp, setShowHelp] = useState(false);
     const [showFamily, setShowFamily] = useState(false);
     const [showTrustedContacts, setShowTrustedContacts] = useState(false);
-    const [activeView, setActiveView] = useState<'dashboard' | 'family' | 'trusted' | 'visual'>('dashboard');
+    const [activeView, setActiveView] = useState<'dashboard' | 'family' | 'trusted' | 'visual' | 'sahayak'>('dashboard');
     const [isOffline, setIsOffline] = useState(!navigator.onLine);
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const { theme, toggleTheme } = useThemeStore();
@@ -148,6 +149,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                             <li><a href="#" className={activeView === 'family' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('family'); setShowFamily(true); setShowTrustedContacts(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={16} />{t('family')}</a></li>
                             <li><a href="#" className={activeView === 'trusted' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('trusted'); setShowTrustedContacts(true); setShowFamily(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ShieldCheck size={16} />{t('trustedContacts') || 'Trusted'}</a></li>
                             <li><a href="#" className={activeView === 'visual' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('visual'); setShowFamily(false); setShowTrustedContacts(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16} /> Visual Shield</a></li>
+                            <li><a href="#" className={activeView === 'sahayak' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveView('sahayak'); setShowFamily(false); setShowTrustedContacts(false); setMobileNavOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Handshake size={16} /> Sahayak</a></li>
                             <li>
                                 <button
                                     onClick={() => { setShowHelp(true); setMobileNavOpen(false); }}
@@ -189,6 +191,13 @@ export default function Dashboard({ onLogout }: DashboardProps) {
             {activeView === 'visual' && (
                 <div className="container">
                     <VisualShield onBack={() => setActiveView('dashboard')} />
+                </div>
+            )}
+
+            {/* Sahayak Admin View */}
+            {activeView === 'sahayak' && (
+                <div className="container">
+                    <SahayakDashboard onBack={() => setActiveView('dashboard')} />
                 </div>
             )}
 

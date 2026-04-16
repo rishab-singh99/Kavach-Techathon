@@ -45,6 +45,79 @@ app.get('/api/dashboard', (req, res) => {
     });
 });
 
+// ─── SAHAYAK MODULE ────────────────────────────────
+
+// In-memory Sahayak data (prototype)
+const sahayakProfiles = new Map([
+    ['9876543210', { id: 'SAH-001', name: 'Maj. Rajendra Singh (Retd.)', role: 'retired-army', rank: 'Major', villageId: 'VIL-001', villageName: 'Rampur Kalan', phone: '9876543210', pin: '1234', trustScore: 94, totalResolved: 47, totalEarnings: 18500 }],
+    ['9988776655', { id: 'SAH-002', name: 'Sunita Devi', role: 'anganwadi', villageId: 'VIL-001', villageName: 'Rampur Kalan', phone: '9988776655', pin: '1234', trustScore: 89, totalResolved: 32, totalEarnings: 12000 }],
+]);
+
+const sahayakCases = [];
+const sahayakAuditLog = [];
+
+// Sahayak Auth
+app.post('/api/sahayak/login', (req, res) => {
+    const { phone, pin } = req.body;
+    const profile = sahayakProfiles.get(phone);
+    if (!profile || profile.pin !== pin) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ sahayakId: profile.id, phone, role: profile.role }, JWT_SECRET, { expiresIn: '12h' });
+    sahayakAuditLog.push({ action: 'LOGIN', performedBy: profile.id, details: `${profile.name} logged in`, timestamp: new Date().toISOString() });
+    const { pin: _, ...safeProfile } = profile;
+    res.json({ token, profile: safeProfile });
+});
+
+// Get Sahayak Cases
+app.get('/api/sahayak/cases', (req, res) => {
+    res.json({ cases: sahayakCases });
+});
+
+// Create Case
+app.post('/api/sahayak/cases', (req, res) => {
+    const newCase = {
+        id: `CASE-${String(sahayakCases.length + 1).padStart(3, '0')}`,
+        ...req.body,
+        createdAt: new Date().toISOString(),
+        updates: [{ id: `UPD-${Date.now()}`, status: 'reported', note: 'Case created', timestamp: new Date().toISOString() }],
+    };
+    sahayakCases.unshift(newCase);
+    sahayakAuditLog.push({ action: 'CASE_CREATED', performedBy: req.body.assignedSahayakId, caseId: newCase.id, details: `New case: ${newCase.title}`, timestamp: new Date().toISOString() });
+    res.json(newCase);
+});
+
+// Update Case Status
+app.patch('/api/sahayak/cases/:id/status', (req, res) => {
+    const { status, note, updatedBy } = req.body;
+    const c = sahayakCases.find(cs => cs.id === req.params.id);
+    if (!c) return res.status(404).json({ error: 'Case not found' });
+    c.status = status;
+    c.updates.push({ id: `UPD-${Date.now()}`, status, note, updatedBy, timestamp: new Date().toISOString() });
+    if (status === 'physically-resolved') c.resolvedAt = new Date().toISOString();
+    sahayakAuditLog.push({ action: 'STATUS_UPDATE', performedBy: updatedBy, caseId: c.id, details: `Status → ${status}: ${note}`, timestamp: new Date().toISOString() });
+    res.json(c);
+});
+
+// Process Honorarium
+app.post('/api/sahayak/cases/:id/honorarium', (req, res) => {
+    const c = sahayakCases.find(cs => cs.id === req.params.id);
+    if (!c) return res.status(404).json({ error: 'Case not found' });
+    if (c.status !== 'physically-resolved' || !c.userSatisfied) {
+        return res.status(400).json({ error: 'Case must be fully resolved and user satisfied' });
+    }
+    const amount = c.priority === 'high' ? 500 : c.priority === 'medium' ? 375 : 250;
+    c.honorariumAmount = amount;
+    c.honorariumPaid = true;
+    sahayakAuditLog.push({ action: 'HONORARIUM_PAID', performedBy: 'SYSTEM', caseId: c.id, details: `Rs ${amount} processed`, timestamp: new Date().toISOString() });
+    res.json({ amount, caseId: c.id });
+});
+
+// Get Audit Log
+app.get('/api/sahayak/audit', (req, res) => {
+    res.json({ log: sahayakAuditLog });
+});
+
 app.listen(PORT, () => {
     console.log(`Kavach backend running on port ${PORT}`);
 });
