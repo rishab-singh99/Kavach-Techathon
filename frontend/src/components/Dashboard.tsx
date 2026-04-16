@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import CountUp from 'react-countup';
+import { motion, AnimatePresence } from 'framer-motion';
+import SpotlightCard from './SpotlightCard';
 import ThreatModal from './ThreatModal';
 import HelpModal from './HelpModal';
 import FamilyDashboard from './FamilyDashboard';
@@ -210,14 +212,19 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="stats-grid" style={{ animationDelay: '0.1s' }}>
+                <motion.div 
+                    initial="hidden" 
+                    animate="visible" 
+                    variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+                    className="stats-grid" style={{ animationDelay: '0.1s' }}
+                >
                     {[
                         { label: t('totalScanned'), value: stats.totalScanned, icon: <Scan size={20} />, color: '#20BEFF' },
                         { label: t('threatsDetected'), value: stats.threatsDetected, icon: <AlertTriangle size={20} />, color: '#EF4444' },
                         { label: t('safeMessages'), value: stats.safeMessages, icon: <CheckCircle size={20} />, color: '#10B981' },
                         { label: t('highRisk'), value: stats.highRiskThreats, icon: <Shield size={20} />, color: '#F59E0B' },
                     ].map((stat, i) => (
-                        <div key={i} className="stat-card">
+                        <SpotlightCard key={i} className="stat-card" as={motion.div} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span className="stat-label">{stat.label}</span>
                                 <span style={{ color: stat.color }}>{stat.icon}</span>
@@ -225,12 +232,12 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                             <div className="stat-value" style={{ color: stat.color }}>
                                 <CountUp end={stat.value} duration={1.5} />
                             </div>
-                        </div>
+                        </SpotlightCard>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Visual Shield Quick Action */}
-                <div className="card" style={{
+                <SpotlightCard className="card" style={{
                     margin: '32px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     background: 'linear-gradient(90deg, var(--surface) 0%, rgba(32, 190, 255, 0.05) 100%)',
                     borderLeft: '4px solid var(--primary)', cursor: 'pointer', animation: 'fadeIn 0.5s ease-out'
@@ -245,7 +252,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                         </div>
                     </div>
                     <button className="btn btn-primary" style={{ marginRight: '10px' }}>Scan Image</button>
-                </div>
+                </SpotlightCard>
 
                 {/* Scan Button */}
                 <div className="scan-button-wrap" style={{ margin: '40px 0', textAlign: 'center' }}>
@@ -275,31 +282,31 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                 {/* Charts */}
                 {stats.totalScanned > 0 && (
                     <div className="dashboard-charts" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', margin: '32px 0' }}>
-                        <div className="card">
+                        <SpotlightCard className="card">
                             <h3 style={{ fontSize: '18px', marginBottom: '16px', fontWeight: 600 }}>{t('threatDistribution')}</h3>
                             <ResponsiveContainer width="100%" height={250}>
                                 <PieChart>
-                                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" paddingAngle={4} strokeWidth={0}>
-                                        {pieData.map((_, idx) => <Cell key={idx} fill={CHART_COLORS[idx]} />)}
+                                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="value" paddingAngle={8} strokeWidth={0}>
+                                        {pieData.map((_, idx) => <Cell key={idx} fill={CHART_COLORS[idx]} style={{ filter: `drop-shadow(0px 0px 8px ${CHART_COLORS[idx]}40)` }} />)}
                                     </Pie>
-                                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }} />
+                                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)', borderRadius: '12px', color: 'var(--text)' }} itemStyle={{ color: 'var(--text)' }} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
-                        </div>
-                        <div className="card">
+                        </SpotlightCard>
+                        <SpotlightCard className="card">
                             <h3 style={{ fontSize: '18px', marginBottom: '16px', fontWeight: 600 }}>{t('weeklyTrend')}</h3>
                             <ResponsiveContainer width="100%" height={250}>
                                 <LineChart data={weeklyData}>
-                                    <XAxis dataKey="day" stroke="var(--text-secondary)" fontSize={12} />
-                                    <YAxis stroke="var(--text-secondary)" fontSize={12} />
-                                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }} />
+                                    <XAxis dataKey="day" stroke="var(--text-secondary)" fontSize={12} axisLine={false} tickLine={false} />
+                                    <YAxis stroke="var(--text-secondary)" fontSize={12} axisLine={false} tickLine={false} />
+                                    <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)', borderRadius: '12px', color: 'var(--text)' }} />
                                     <Legend />
-                                    <Line type="monotone" dataKey="scans" stroke="#20BEFF" strokeWidth={2} dot={{ r: 4 }} />
-                                    <Line type="monotone" dataKey="threats" stroke="#EF4444" strokeWidth={2} dot={{ r: 4 }} />
+                                    <Line type="monotone" dataKey="scans" stroke="#20BEFF" strokeWidth={3} dot={{ r: 4, fill: '#20BEFF', strokeWidth: 0 }} style={{ filter: 'drop-shadow(0px 4px 6px rgba(32, 190, 255, 0.4))' }} />
+                                    <Line type="monotone" dataKey="threats" stroke="#EF4444" strokeWidth={3} dot={{ r: 4, fill: '#EF4444', strokeWidth: 0 }} style={{ filter: 'drop-shadow(0px 4px 6px rgba(239, 68, 68, 0.4))' }} />
                                 </LineChart>
                             </ResponsiveContainer>
-                        </div>
+                        </SpotlightCard>
                     </div>
                 )}
 

@@ -56,10 +56,28 @@ const SCAM_PATTERNS: ScamPattern[] = [
         level: 'medium'
     },
     {
-        pattern: /(http|https|www|bit\.ly|t\.co|tinyurl|click|link)/i,
+        pattern: /(http|https|www|bit\.ly|t\.co|tinyurl|click|link|update-now|verify-link)/i,
         category: 'Suspicious Link',
         description: 'Contains external links which are often used for malware or phishing.',
         level: 'medium'
+    },
+    {
+        pattern: /(job|work from home|part time|earn|easy money|whatsapp message|youtube likes|salary)/i,
+        category: 'Job & Earning Scam',
+        description: 'Unrealistic earning opportunities, typically used to lure people into advance-fee fraud.',
+        level: 'high'
+    },
+    {
+        pattern: /(irctc|pnr|train ticket|refund|flight cancellation|booking suspended)/i,
+        category: 'Travel Scam',
+        description: 'Impersonates travel portals to demand fake cancellation/booking fees.',
+        level: 'high'
+    },
+    {
+        pattern: /(tax|irs|refund pending|income tax|pan|aadhaar|deactivated|block)/i,
+        category: 'Government/Tax Impersonation',
+        description: 'Threatens legal action or promises tax refunds to steal sensitive ID cards.',
+        level: 'high'
     }
 ];
 

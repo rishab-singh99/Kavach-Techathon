@@ -28,9 +28,15 @@ const MOCK_CONTACTS: TrustedContact[] = [
     { id: '1', name: 'State Bank of India', phone: '1800111210', type: 'bank', verified: true, verifiedBy: 'system', trustScore: 98, addedAt: '2024-01-15', lastSeen: '2024-02-14', notes: 'Official SBI helpline', icon: '🏦' },
     { id: '2', name: 'HDFC Bank', phone: '18002026161', type: 'bank', verified: true, verifiedBy: 'system', trustScore: 96, addedAt: '2024-01-20', lastSeen: '2024-02-13', notes: 'HDFC customer care', icon: '🏦' },
     { id: '3', name: 'Cyber Crime Helpline', phone: '1930', type: 'government', verified: true, verifiedBy: 'system', trustScore: 100, addedAt: '2024-01-01', lastSeen: '2024-02-14', notes: 'National cyber crime reporting', icon: '🛡️' },
-    { id: '4', name: 'Mom', phone: '9876500001', type: 'family', verified: true, verifiedBy: 'user', trustScore: 100, addedAt: '2024-01-01', lastSeen: '2024-02-14', notes: 'Family', icon: '👩' },
-    { id: '5', name: 'Dad', phone: '9876500002', type: 'family', verified: true, verifiedBy: 'user', trustScore: 100, addedAt: '2024-01-01', lastSeen: '2024-02-14', notes: 'Family', icon: '👨' },
+    { id: '4', name: 'Mom', phone: '9876500001', type: 'family', verified: true, verifiedBy: 'user', trustScore: 100, addedAt: '2024-01-01', lastSeen: '2024-02-14', notes: 'Family emergency contact', icon: '👩' },
+    { id: '5', name: 'Dad', phone: '9876500002', type: 'family', verified: true, verifiedBy: 'user', trustScore: 100, addedAt: '2024-01-01', lastSeen: '2024-02-14', notes: 'Family emergency contact', icon: '👨' },
     { id: '6', name: 'Flipkart Support', phone: '18002089898', type: 'business', verified: true, verifiedBy: 'community', trustScore: 88, addedAt: '2024-02-01', lastSeen: '2024-02-10', notes: 'E-commerce support', icon: '🛒' },
+    { id: '7', name: 'Local Police Station', phone: '100', type: 'government', verified: true, verifiedBy: 'system', trustScore: 100, addedAt: '2024-01-02', lastSeen: '2024-03-01', notes: 'Emergency Services', icon: '🚓' },
+    { id: '8', name: 'Apollo Hospital', phone: '1066', type: 'business', verified: true, verifiedBy: 'system', trustScore: 95, addedAt: '2024-01-10', lastSeen: '2024-02-28', notes: 'Hospital emergency', icon: '🏥' },
+    { id: '9', name: 'Ravi (Plumber)', phone: '9876511111', type: 'personal', verified: true, verifiedBy: 'user', trustScore: 80, addedAt: '2024-02-15', lastSeen: '2024-03-05', notes: 'Local plumber', icon: '🔧' },
+    { id: '10', name: 'ICICI Bank Credit Card', phone: '18001024242', type: 'bank', verified: true, verifiedBy: 'community', trustScore: 92, addedAt: '2024-02-18', lastSeen: '2024-03-10', notes: 'Credit card services', icon: '💳' },
+    { id: '11', name: 'Sarah (Sister)', phone: '9876522222', type: 'family', verified: true, verifiedBy: 'user', trustScore: 100, addedAt: '2024-01-05', lastSeen: '2024-03-15', notes: 'Family sync', icon: '👧' },
+    { id: '12', name: 'Amazon Delivery', phone: '180030009009', type: 'business', verified: false, verifiedBy: 'community', trustScore: 65, addedAt: '2024-03-01', lastSeen: '2024-03-12', notes: 'Unverified delivery partner', icon: '📦' }
 ];
 
 const KNOWN_SAFE: Record<string, string> = {
@@ -45,6 +51,10 @@ const KNOWN_SCAM: Record<string, string> = {
     '6666666666': 'Bank Fraud - "KYC Update Required"',
     '5555555555': 'Job Offer - "Part-time work from home"',
     '1234567890': 'Insurance Scam - "Premium Overdue/Refund"',
+    '1111111111': 'Electricity Fraud - "Power cutoff tonight"',
+    '2222222222': 'Customs Scam - "Package stuck at airport"',
+    '3333333333': 'Aadhaar Fraud - "Biometric update failed"',
+    '4444444444': 'Credit Card Scam - "Limit increase approved"',
 };
 
 interface TrustedContactStore {
