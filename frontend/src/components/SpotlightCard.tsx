@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SpotlightCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   spotlightColor?: string;
+  as?: any;
 }
 
 export default function SpotlightCard({ 
