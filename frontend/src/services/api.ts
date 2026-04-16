@@ -40,10 +40,10 @@ export const dashboardAPI = {
                     name: 'User'
                 },
                 stats: {
-                    totalScanned: 247,
-                    threatsDetected: 18,
-                    safeMessages: 229,
-                    highRiskThreats: 5,
+                    totalScanned: 1542,
+                    threatsDetected: 124,
+                    safeMessages: 1395,
+                    highRiskThreats: 23,
                 },
                 recentMessages: [
                     {
@@ -110,7 +110,43 @@ export const dashboardAPI = {
                         sender: 'DOMINOS',
                         body: 'Hungry? Get 50% OFF on your favorite pizzas! Use code YUM50. Order now on the app.',
                         time: 'Yesterday',
-                        analysis: { isScam: false, threatLevel: 'low', reason: 'Start promotional offer' }
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Promotional offer' }
+                    },
+                    {
+                        sender: 'VK-HDFC',
+                        body: 'HDFC Bank: Rs.2,400 debited from a/c **4560 at POS STARBUCKS. Ref: 45012398. Not you? Call 18002026161.',
+                        time: 'Yesterday',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Legitimate transaction alert' }
+                    },
+                    {
+                        sender: '+91-81XXXXXXXX',
+                        body: 'URGENT: Your PAN card is deactivated. Update PAN details via this link to restore banking services: pan-card-kyc1.com',
+                        time: 'Yesterday',
+                        analysis: { isScam: true, threatLevel: 'high', reason: 'PAN KYC scam — fake portal and urgency tactic' }
+                    },
+                    {
+                        sender: 'JD-IRCTC',
+                        body: 'PNR 8501234567 Chart prepared. Train 12951, DEP: 16:55. Seat: B4-12,13. Wishing you a happy journey.',
+                        time: '2 days ago',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Legitimate travel notification' }
+                    },
+                    {
+                        sender: '+44-7700-900XXX',
+                        body: 'Notice from Customs: Your package is held at terminal. Pay clearance fee of Rs. 4,500 here: package-clearance-online.com',
+                        time: '2 days ago',
+                        analysis: { isScam: true, threatLevel: 'high', reason: 'Customs/Courier scam — fraudulent international number and fake fee' }
+                    },
+                    {
+                        sender: 'MD-SWIGGY',
+                        body: 'Your Swiggy order from Biryani Blues is arriving in 15 mins. OTP for delivery is 4519.',
+                        time: '2 days ago',
+                        analysis: { isScam: false, threatLevel: 'low', reason: 'Legitimate food delivery update' }
+                    },
+                    {
+                        sender: '+91-9990XXXXXX',
+                        body: 'Dear customer, you have 5000 reward points expiring today. Redeem for cash at sbi-rewards-redeem.co.in/login',
+                        time: '3 days ago',
+                        analysis: { isScam: true, threatLevel: 'high', reason: 'Reward points scam — phishing attempt using bank brand' }
                     }
                 ]
             }

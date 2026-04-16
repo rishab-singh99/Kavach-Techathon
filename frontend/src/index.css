@@ -1,25 +1,29 @@
 :root {
-  --primary: #20BEFF;
-  --primary-hover: #1aa3db;
-  --bg: #0A0E27;
-  --surface: #151B3B;
-  --text: #F3F4F6;
-  --text-secondary: #9CA3AF;
-  --border: #2D3659;
+  --primary: #3B82F6; /* Professional True Blue */
+  --primary-hover: #2563EB;
+  --bg: #09090B; /* Deep sophisticated slate-black */
+  --surface: rgba(24, 24, 27, 0.65); /* Zinc-900 with glass */
+  --glass-border: rgba(255, 255, 255, 0.08); /* Stark clean border */
+  --glass-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.5);
+  --text: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --border: rgba(255, 255, 255, 0.08);
   --success: #10B981;
   --danger: #EF4444;
   --warning: #F59E0B;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 [data-theme='light'] {
-  --primary: #0284C7;
-  --primary-hover: #0369A1;
-  --bg: #F0F9FF;
-  --surface: #FFFFFF;
+  --primary: #0F172A; /* Slate 900 for bold professional contrast */
+  --primary-hover: #334155;
+  --bg: #F8FAFC;
+  --surface: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
   --text: #0F172A;
   --text-secondary: #64748B;
-  --border: #E2E8F0;
+  --border: rgba(0, 0, 0, 0.08);
   --success: #059669;
   --danger: #DC2626;
   --warning: #D97706;
@@ -34,6 +38,8 @@
 
 body {
   background-color: var(--bg);
+  background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 80%);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
 }
@@ -47,7 +53,10 @@ body {
 
 .navbar {
   background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
   padding: 16px 0;
   position: sticky;
   top: 0;
@@ -91,10 +100,18 @@ body {
 /* Cards */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
 }
 
 /* Forms */
@@ -195,16 +212,21 @@ input::placeholder {
 
 .stat-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
   padding: 24px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px -5px rgba(0, 0, 0, 0.2);
+  border-color: var(--primary);
 }
+
 
 .stat-value {
   font-size: 36px;
@@ -230,6 +252,8 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 th {
@@ -351,13 +375,16 @@ tr:hover {
 
 .family-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--glass-shadow);
 }
 
 .family-card:hover {
@@ -541,11 +568,14 @@ tr:hover {
   align-items: center;
   padding: 28px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 24px;
+  box-shadow: var(--glass-shadow);
 }
 
 .family-profile-left {
@@ -566,7 +596,9 @@ tr:hover {
   gap: 16px;
   padding: 16px 20px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   transition: all 0.2s ease;
 }
@@ -613,14 +645,16 @@ tr:hover {
 
 .family-modal {
   background: var(--surface);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 32px;
   width: 100%;
   max-width: 520px;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes familyPulse {
@@ -683,11 +717,13 @@ tr:hover {
 
 .family-alert-popup {
   background: var(--surface);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   overflow: hidden;
   display: flex;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
   animation: alertSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   position: relative;
 }
